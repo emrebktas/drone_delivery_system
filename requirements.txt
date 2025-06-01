@@ -1,0 +1,10 @@
+matplotlib>=3.5.0
+numpy>=1.21.0
+typing-extensions>=4.0.0
+
+# İsteğe bağlı - daha iyi performans için
+numba>=0.56.0
+
+# Geliştirme ve test için (isteğe bağlı)
+pytest>=7.0.0
+black>=22.0.0 
