@@ -1,48 +1,37 @@
-"""
-A* Algoritması ile Rota Bulma Modülü
-Bu modül drone'lar için en optimal teslimat rotalarını
-A* algoritması kullanarak hesaplar.
-"""
-
 import heapq
 import math
 from typing import List, Dict, Tuple, Optional, Set
 from drone_system import DroneFleet, DeliveryPoint, NoFlyZone, Drone
 
 class Node:
-    """Graf düğümü sınıfı"""
     
     def __init__(self, position: Tuple[float, float], delivery_id: Optional[int] = None):
         self.position = position
-        self.delivery_id = delivery_id  # None ise başlangıç noktası
-        self.g_cost = float('inf')      # Başlangıçtan bu düğüme maliyet
-        self.h_cost = 0                 # Bu düğümden hedefe tahmini maliyet
-        self.f_cost = float('inf')      # g_cost + h_cost
+        self.delivery_id = delivery_id
+        self.g_cost = float('inf')
+        self.h_cost = 0
+        self.f_cost = float('inf')
         self.parent = None
         
     def __lt__(self, other):
         return self.f_cost < other.f_cost
 
 class Graph:
-    """Teslimat noktaları için graf yapısı"""
     
     def __init__(self, deliveries: List[DeliveryPoint], no_fly_zones: List[NoFlyZone]):
-        self.nodes = {}  # position -> Node
+        self.nodes = {}
         self.deliveries = {d.delivery_id: d for d in deliveries}
         self.no_fly_zones = no_fly_zones
-        self.adjacency_list = {}  # Komşuluk listesi
+        self.adjacency_list = {}
         
         self._build_graph()
     
     def _build_graph(self):
-        """Graf yapısını oluşturur"""
-        # Her teslimat noktası için düğüm oluştur
         for delivery in self.deliveries.values():
             node = Node(delivery.position, delivery.delivery_id)
             self.nodes[delivery.position] = node
             self.adjacency_list[delivery.position] = []
         
-        # Komşuluk ilişkilerini kurup kenar ağırlıklarını hesapla
         positions = list(self.nodes.keys())
         for i, pos1 in enumerate(positions):
             for j, pos2 in enumerate(positions):
@@ -51,19 +40,15 @@ class Graph:
     
     def _is_valid_connection(self, pos1: Tuple[float, float], 
                            pos2: Tuple[float, float]) -> bool:
-        """İki nokta arasında geçerli bağlantı olup olmadığını kontrol eder"""
-        # No-fly zone kontrolü
         for zone in self.no_fly_zones:
             if zone.intersects_path(pos1, pos2):
                 return False
         return True
     
     def get_neighbors(self, position: Tuple[float, float]) -> List[Tuple[float, float]]:
-        """Bir pozisyonun komşularını döndürür"""
         return self.adjacency_list.get(position, [])
 
 class AStarPathfinder:
-    """A* algoritması ile rota bulma sınıfı"""
     
     def __init__(self, fleet: DroneFleet, deliveries: List[DeliveryPoint], 
                  no_fly_zones: List[NoFlyZone]):
@@ -74,17 +59,14 @@ class AStarPathfinder:
         self.current_time = 0
     
     def find_optimal_routes(self) -> Dict[int, List[Tuple[float, float]]]:
-        """Tüm drone'lar için optimal rotaları bulur"""
         routes = {}
         unassigned_deliveries = self.deliveries.copy()
         
-        # Her drone için en iyi rotayı bul
         for drone in self.fleet.drones.values():
             route = self._find_route_for_drone(drone, unassigned_deliveries)
             if route:
                 routes[drone.drone_id] = route
-                # Atanan teslimatları listeden çıkar
-                for pos in route[1:]:  # İlk pozisyon başlangıç noktası
+                for pos in route[1:]:
                     delivery = self._get_delivery_at_position(pos, unassigned_deliveries)
                     if delivery:
                         unassigned_deliveries.remove(delivery)
@@ -93,18 +75,15 @@ class AStarPathfinder:
     
     def _find_route_for_drone(self, drone: Drone, 
                              available_deliveries: List[DeliveryPoint]) -> Optional[List[Tuple[float, float]]]:
-        """Belirli bir drone için en iyi rotayı bulur"""
         if not available_deliveries:
             return None
         
-        # Drone kapasitesine uygun teslimatları filtrele
         suitable_deliveries = [d for d in available_deliveries 
                               if d.weight <= drone.max_weight]
         
         if not suitable_deliveries:
             return None
         
-        # En yüksek öncelikli teslimatlardan başla
         suitable_deliveries.sort(key=lambda d: d.priority, reverse=True)
         
         route = [drone.start_pos]
@@ -113,7 +92,6 @@ class AStarPathfinder:
         current_battery = drone.battery
         assigned_deliveries = []
         
-        # Greedy yaklaşım ile rotayı oluştur
         while suitable_deliveries:
             best_delivery = None
             best_cost = float('inf')
@@ -146,11 +124,8 @@ class AStarPathfinder:
     
     def _calculate_cost(self, current_pos: Tuple[float, float], 
                        delivery: DeliveryPoint, distance: float) -> float:
-        """Teslimat maliyetini hesaplar"""
-        # Maliyet fonksiyonu: distance × weight + (priority × 100)
         base_cost = distance * delivery.weight + (delivery.priority * 100)
         
-        # No-fly zone cezası
         penalty = 0
         for zone in self.no_fly_zones:
             if zone.is_active(self.current_time):
@@ -161,25 +136,21 @@ class AStarPathfinder:
     
     def _calculate_heuristic(self, current_pos: Tuple[float, float], 
                            target_pos: Tuple[float, float]) -> float:
-        """A* için heuristic fonksiyonunu hesaplar"""
-        # Heuristic = distance + no_fly_zone_penalty
         distance = Drone.calculate_distance(current_pos, target_pos)
         
         penalty = 0
         for zone in self.no_fly_zones:
             if zone.is_active(self.current_time):
                 if zone.intersects_path(current_pos, target_pos):
-                    penalty += 500  # No-fly zone cezası
+                    penalty += 500
         
         return distance + penalty
     
     def find_path_astar(self, start: Tuple[float, float], 
                        goal: Tuple[float, float]) -> Optional[List[Tuple[float, float]]]:
-        """A* algoritması ile iki nokta arasında optimal yol bulur"""
         open_set = []
         closed_set = set()
         
-        # Başlangıç düğümü
         start_node = Node(start)
         start_node.g_cost = 0
         start_node.h_cost = self._calculate_heuristic(start, goal)
@@ -196,11 +167,9 @@ class AStarPathfinder:
                 
             closed_set.add(current_node.position)
             
-            # Hedefe ulaştık mı?
             if current_node.position == goal:
                 return self._reconstruct_path(current_node)
             
-            # Komşuları kontrol et
             for neighbor_pos in self.graph.get_neighbors(current_node.position):
                 if neighbor_pos in closed_set:
                     continue
@@ -222,27 +191,24 @@ class AStarPathfinder:
                     
                     heapq.heappush(open_set, neighbor_node)
         
-        return None  # Yol bulunamadı
+        return None
     
     def _reconstruct_path(self, node: Node) -> List[Tuple[float, float]]:
-        """Düğümden geriye doğru yolu yeniden oluşturur"""
         path = []
         current = node
         while current:
             path.append(current.position)
             current = current.parent
-        return path[::-1]  # Ters çevir
+        return path[::-1]
     
     def _get_delivery_at_position(self, position: Tuple[float, float], 
                                  deliveries: List[DeliveryPoint]) -> Optional[DeliveryPoint]:
-        """Belirli pozisyondaki teslimat noktasını bulur"""
         for delivery in deliveries:
             if delivery.position == position:
                 return delivery
         return None
     
     def calculate_route_metrics(self, route: List[Tuple[float, float]]) -> Dict:
-        """Rota metriklerini hesaplar"""
         if len(route) < 2:
             return {"distance": 0, "energy": 0, "deliveries": 0}
         
@@ -251,9 +217,8 @@ class AStarPathfinder:
             distance = Drone.calculate_distance(route[i], route[i + 1])
             total_distance += distance
         
-        # Basit enerji modeli
         total_energy = total_distance * 0.1
-        deliveries_count = len(route) - 1  # Başlangıç noktası hariç
+        deliveries_count = len(route) - 1
         
         return {
             "distance": total_distance,
