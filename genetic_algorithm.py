@@ -12,21 +12,21 @@ class Individual:
         self.total_energy = 0.0
         self.constraint_violations = 0
     
-    def calculate_fitness(self, fleet: DroneFleet, deliveries: List[DeliveryPoint], 
+    def calculate_fitness(self, fleet: DroneFleet, deliveries: List[DeliveryPoint],
                          no_fly_zones: List[NoFlyZone]) -> float:
-        
+
         self.completed_deliveries = 0
         self.total_energy = 0.0
         self.constraint_violations = 0
-        
+
         for drone_id, route in self.routes.items():
             if len(route) > 1:
                 self.completed_deliveries += len(route) - 1
-                
+
                 for i in range(len(route) - 1):
                     distance = Drone.calculate_distance(route[i], route[i + 1])
                     self.total_energy += distance * 0.1
-                
+
                 drone = fleet.get_drone(drone_id)
                 if drone:
                     violations = self._check_constraints(drone, route, deliveries, no_fly_zones)
@@ -35,17 +35,17 @@ class Individual:
         self.fitness = (self.completed_deliveries * 50) - (self.total_energy * 0.1) - (self.constraint_violations * 1000)
         return self.fitness
     
-    def _check_constraints(self, drone: Drone, route: List[Tuple[float, float]], 
+    def _check_constraints(self, drone: Drone, route: List[Tuple[float, float]],
                           deliveries: List[DeliveryPoint], no_fly_zones: List[NoFlyZone]) -> int:
         violations = 0
         current_load = 0
         current_battery = drone.battery
         current_time = 0
-        
+
         for i, position in enumerate(route):
             if i == 0:
                 continue
-                
+
             delivery = self._find_delivery_at_position(position, deliveries)
             if not delivery:
                 violations += 1
@@ -64,7 +64,7 @@ class Individual:
                 else:
                     current_battery -= energy_needed
                     current_time += distance / drone.speed
-            
+
             if not delivery.is_within_time_window(int(current_time)):
                 violations += 1
             
@@ -157,29 +157,29 @@ class GeneticAlgorithm:
         routes = {}
         available_deliveries = self.deliveries.copy()
         random.shuffle(available_deliveries)
-        
+
         drone_list = list(self.fleet.drones.values())
-        
+
         for drone in drone_list:
             route = [drone.start_pos]
             current_load = 0
             current_battery = drone.battery
-            
+
             deliveries_to_remove = []
             for delivery in available_deliveries:
                 if current_load + delivery.weight <= drone.max_weight:
                     distance = Drone.calculate_distance(route[-1], delivery.position)
                     energy_needed = distance * 0.1
-                    
+
                     if current_battery >= energy_needed:
                         route.append(delivery.position)
                         current_load += delivery.weight
                         current_battery -= energy_needed
                         deliveries_to_remove.append(delivery)
-                        
+
                         if len(route) > 8:
                             break
-            
+
             for delivery in deliveries_to_remove:
                 available_deliveries.remove(delivery)
             
@@ -217,10 +217,10 @@ class GeneticAlgorithm:
     
     def _fix_duplicate_deliveries(self, routes: Dict[int, List[Tuple[float, float]]]):
         seen_positions = set()
-        
+
         for drone_id, route in routes.items():
             new_route = [route[0]] if route else []
-            
+
             for position in route[1:]:
                 if position not in seen_positions:
                     new_route.append(position)
@@ -244,12 +244,12 @@ class GeneticAlgorithm:
     def _swap_mutation(self, individual: Individual):
         all_positions = []
         position_to_drone = {}
-        
+
         for drone_id, route in individual.routes.items():
             for i, pos in enumerate(route[1:], 1):
                 all_positions.append((drone_id, i, pos))
                 position_to_drone[pos] = drone_id
-        
+
         if len(all_positions) >= 2:
             pos1_info, pos2_info = random.sample(all_positions, 2)
             
@@ -262,10 +262,10 @@ class GeneticAlgorithm:
     def _insert_mutation(self, individual: Individual):
         available_deliveries = []
         used_positions = set()
-        
+
         for route in individual.routes.values():
             used_positions.update(route[1:])
-        
+
         for delivery in self.deliveries:
             if delivery.position not in used_positions:
                 available_deliveries.append(delivery)
@@ -273,15 +273,15 @@ class GeneticAlgorithm:
         if available_deliveries and individual.routes:
             delivery = random.choice(available_deliveries)
             drone_id = random.choice(list(individual.routes.keys()))
-            
+
             drone = self.fleet.get_drone(drone_id)
             if drone and len(individual.routes[drone_id]) < 8:
                 individual.routes[drone_id].append(delivery.position)
-    
+
     def _remove_mutation(self, individual: Individual):
-        non_empty_routes = [(drone_id, route) for drone_id, route in individual.routes.items() 
+        non_empty_routes = [(drone_id, route) for drone_id, route in individual.routes.items()
                            if len(route) > 1]
-        
+
         if non_empty_routes:
             drone_id, route = random.choice(non_empty_routes)
             if len(route) > 1:
@@ -298,4 +298,4 @@ class GeneticAlgorithm:
             "total_energy": self.best_individual.total_energy,
             "constraint_violations": self.best_individual.constraint_violations,
             "fitness_history": self.fitness_history
-        } 
+        }

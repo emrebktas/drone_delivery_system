@@ -17,7 +17,7 @@ class Drone:
         self.current_load = 0.0
         self.assigned_deliveries = []
         self.route = [start_pos]
-        
+
     def can_carry(self, weight: float) -> bool:
         return (self.current_load + weight) <= self.max_weight
     
@@ -32,7 +32,7 @@ class Drone:
         base_consumption = distance * 0.1
         load_factor = 1 + (self.current_load / self.max_weight) * 0.5
         return base_consumption * load_factor
-    
+
     def can_reach(self, position: Tuple[float, float]) -> bool:
         distance = self.calculate_distance(self.current_pos, position)
         required_energy = self.calculate_energy_consumption(distance)
@@ -71,7 +71,7 @@ class DeliveryPoint:
         self.time_window = time_window
         self.is_delivered = False
         self.delivery_time = None
-        
+
     def calculate_cost(self, distance: float) -> float:
         return distance * self.weight + (self.priority * 100)
     
@@ -88,7 +88,7 @@ class NoFlyZone:
         self.zone_id = zone_id
         self.coordinates = coordinates
         self.active_time = active_time
-        
+
     def is_active(self, current_time: int) -> bool:
         return self.active_time[0] <= current_time <= self.active_time[1]
     
@@ -111,15 +111,15 @@ class NoFlyZone:
         
         return inside
     
-    def intersects_path(self, start: Tuple[float, float], 
+    def intersects_path(self, start: Tuple[float, float],
                        end: Tuple[float, float]) -> bool:
         return self.contains_point(start) or self.contains_point(end)
-    
+
     def get_penalty_score(self) -> float:
         return 1000.0
 
 class DroneFleet:
-    
+
     def __init__(self):
         self.drones: Dict[int, Drone] = {}
         
@@ -151,4 +151,4 @@ class DroneFleet:
             "total_capacity": total_capacity,
             "total_battery": total_battery,
             "average_speed": sum(d.speed for d in self.drones.values()) / len(self.drones)
-        } 
+        }
