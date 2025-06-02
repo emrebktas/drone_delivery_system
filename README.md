@@ -2,7 +2,7 @@
 
 Bu proje, enerji limitleri ve uçuş yasağı bölgeleri (no-fly zone) gibi dinamik kısıtlar altında çalışan drone'lar için en uygun teslimat rotalarının belirlenmesini sağlayan gelişmiş algoritmaları içerir.
 
-## 🚁 Proje Özellikleri
+##  Proje Özellikleri
 
 - **A* Algoritması**: Graf tabanlı optimal yol bulma
 - **Genetic Algorithm**: Evrimsel optimizasyon ile en iyi çözüm arama
@@ -11,14 +11,14 @@ Bu proje, enerji limitleri ve uçuş yasağı bölgeleri (no-fly zone) gibi dina
 - **Rastgele Veri Üreteci**: Test senaryoları için esnek veri oluşturma
 - **Performans Analizi**: Algoritmaların karşılaştırmalı değerlendirmesi
 
-## 📋 Gereksinimler
+##  Gereksinimler
 
 - Python 3.8+
 - matplotlib>=3.5.0
 - numpy>=1.21.0
 - typing-extensions>=4.0.0
 
-## 🛠️ Kurulum
+##  Kurulum
 
 1. **Projeyi klonlayın:**
    ```bash
@@ -39,7 +39,7 @@ Bu proje, enerji limitleri ve uçuş yasağı bölgeleri (no-fly zone) gibi dina
    pip install -r requirements.txt
    ```
 
-## 🚀 Hızlı Başlangıç
+##  Hızlı Başlangıç
 
 Ana uygulamayı çalıştırın:
 
@@ -51,7 +51,7 @@ Bu komut iki ana senaryoyu çalıştırır:
 - **Senaryo 1**: 5 drone, 20 teslimat, 3 no-fly zone
 - **Senaryo 2**: 10 drone, 50 teslimat, 5 no-fly zone
 
-## 📊 Algoritma Detayları
+##  Algoritma Detayları
 
 ### 1. A* Algoritması (pathfinding.py)
 
@@ -107,7 +107,7 @@ csp_solver = CSPSolver(fleet, deliveries, no_fly_zones)
 solution = csp_solver.solve()
 ```
 
-## 📁 Proje Yapısı
+##  Proje Yapısı
 
 ```
 drone_uyg3/
@@ -123,7 +123,7 @@ drone_uyg3/
 └── README.md              # Bu dosya
 ```
 
-## 📊 Veri Yapıları
+##  Veri Yapıları
 
 ### Drone Özellikleri
 ```python
@@ -156,7 +156,7 @@ drone_uyg3/
 }
 ```
 
-## 🎯 Kullanım Örnekleri
+##  Kullanım Örnekleri
 
 ### Rastgele Veri Üretme
 
@@ -191,7 +191,7 @@ solution = ga.evolve()
 visualizer.plot_fitness_evolution(ga.fitness_history)
 ```
 
-## 📈 Performans Metrikleri
+##  Performans Metrikleri
 
 Sistem aşağıdaki metrikleri ölçer:
 
@@ -201,7 +201,7 @@ Sistem aşağıdaki metrikleri ölçer:
 - **Kısıt İhlali Sayısı**: Ağırlık, enerji, zaman penceresi ihlalleri
 - **Drone Kullanım Oranı**: Aktif drone'ların toplam drone'lara oranı
 
-## 🔧 Özelleştirme
+##  Özelleştirme
 
 ### Yeni Algoritma Ekleme
 
@@ -219,7 +219,7 @@ custom_deliveries = generator.generate_clustered_deliveries(30, 4)
 custom_zones = generator.generate_dynamic_zones(6)
 ```
 
-## 🐛 Sorun Giderme
+##  Sorun Giderme
 
 ### Yaygın Hatalar
 
@@ -233,7 +233,7 @@ custom_zones = generator.generate_dynamic_zones(6)
 - CSP çözücüde forward checking kullanın
 - GA parametrelerini veri boyutuna göre ayarlayın
 
-## 📝 Katkıda Bulunma
+##  Katkıda Bulunma
 
 1. Projeyi fork edin
 2. Feature branch oluşturun (`git checkout -b feature/AmazingFeature`)
@@ -241,18 +241,18 @@ custom_zones = generator.generate_dynamic_zones(6)
 4. Branch'inizi push edin (`git push origin feature/AmazingFeature`)
 5. Pull Request oluşturun
 
-## 📄 Lisans
+##  Lisans
 
 Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakın.
 
-## 🤝 İletişim
+##  İletişim
 
 Proje sorumlusu: [İsim Soyisim]
 Email: [email@example.com]
 
 Proje Link: [https://github.com/username/drone_uyg3](https://github.com/username/drone_uyg3)
 
-## 🙏 Teşekkürler
+##  Teşekkürler
 
 - Algoritma tasarımında ilham veren akademik çalışmalar
 - Matplotlib ve NumPy geliştiricileri
