@@ -69,8 +69,8 @@ class DroneVisualizer:
                 color = 'lightblue'
                 size = 80
                 marker = 'o'
-            
-            ax.scatter(x, y, c=color, s=size, marker=marker, 
+
+            ax.scatter(x, y, c=color, s=size, marker=marker,
                       edgecolors='black', linewidth=1, alpha=0.8, zorder=5)
             
             ax.annotate(f'D{delivery.delivery_id}', (x, y), 
@@ -268,25 +268,25 @@ class DroneVisualizer:
 
 if __name__ == "__main__":
     from drone_system import DroneFleet, DeliveryPoint, NoFlyZone
-    
+
     fleet = DroneFleet()
     fleet.add_drone(1, 5.0, 15000, 10.0, (10, 10))
     fleet.add_drone(2, 4.0, 12000, 8.0, (80, 20))
-    
+
     deliveries = [
         DeliveryPoint(1, (30, 40), 2.0, 4, (0, 60)),
         DeliveryPoint(2, (60, 70), 1.5, 3, (10, 50)),
         DeliveryPoint(3, (20, 80), 3.0, 5, (5, 45))
     ]
-    
+
     zones = [
         NoFlyZone(1, [(40, 30), (60, 30), (60, 50), (40, 50)], (0, 120))
     ]
-    
+
     test_routes = {
         1: [(10, 10), (30, 40), (20, 80)],
         2: [(80, 20), (60, 70)]
     }
-    
+
     visualizer = DroneVisualizer(fleet, deliveries, zones)
-    visualizer.plot_routes(test_routes, "Test Rotaları") 
+    visualizer.plot_routes(test_routes, "Test Rotaları")

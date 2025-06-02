@@ -8,7 +8,7 @@ class CSPVariable:
         self.delivery = delivery
         self.domain = []
         self.assigned_drone = None
-        
+
     def assign(self, drone_id: int):
         if drone_id in self.domain:
             self.assigned_drone = drone_id

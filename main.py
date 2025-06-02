@@ -11,10 +11,10 @@ import ast
 def load_data_from_file(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         content = f.read()
-    
+
     local_vars = {}
     exec(content, {}, local_vars)
-    
+
     return local_vars['drones'], local_vars['deliveries'], local_vars['no_fly_zones']
 
 def create_drone_fleet(drone_data):
@@ -55,9 +55,9 @@ def run_scenario_1():
     print("=" * 50)
     print("SENARYO 1: 5 Drone, 20 Teslimat, 3 No-Fly Zone")
     print("=" * 50)
-    
+
     drone_data, delivery_data, no_fly_data = load_data_from_file('verisetitxt.txt')
-    
+
     fleet = create_drone_fleet(drone_data)
     deliveries = create_delivery_points(delivery_data)
     no_fly_zones = create_no_fly_zones(no_fly_data)
@@ -93,7 +93,7 @@ def run_scenario_2():
     print("=" * 50)
     print("SENARYO 2: 10 Drone, 50 Teslimat, 5 No-Fly Zone")
     print("=" * 50)
-    
+
     generator = DataGenerator()
     drone_data = generator.generate_drones(10)
     delivery_data = generator.generate_deliveries(50)
@@ -147,20 +147,20 @@ def calculate_total_energy(solution):
 def main():
     print("DRONE TESLİMAT ROTA OPTİMİZASYONU")
     print("=" * 50)
-    
+
     try:
         solution1 = run_scenario_1()
-        
+
         solution2 = run_scenario_2()
-        
+
         print("\n" + "=" * 50)
         print("TÜM SENARYOLAR TAMAMLANDI!")
         print("Görselleştirmeler matplotlib ile gösterildi.")
-        
+
     except Exception as e:
         print(f"Hata oluştu: {e}")
         import traceback
         traceback.print_exc()
 
 if __name__ == "__main__":
-    main() 
+    main()

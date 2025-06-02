@@ -60,19 +60,19 @@ class DataGenerator:
         x = round(random.uniform(0, self.map_width), 1)
         y = round(random.uniform(0, self.map_height), 1)
         return (x, y)
-    
+
     def _generate_time_window(self) -> Tuple[int, int]:
         start_time = random.randint(0, 60)
         duration = random.randint(20, 100)
         end_time = start_time + duration
         return (start_time, end_time)
-    
+
     def _generate_active_time(self) -> Tuple[int, int]:
         start_time = random.randint(0, 80)
         duration = random.randint(30, 60)
         end_time = start_time + duration
         return (start_time, end_time)
-    
+
     def _generate_zone_coordinates(self) -> List[Tuple[float, float]]:
         center_x = random.uniform(self.min_zone_size, self.map_width - self.min_zone_size)
         center_y = random.uniform(self.min_zone_size, self.map_height - self.min_zone_size)
@@ -82,14 +82,14 @@ class DataGenerator:
         
         half_width = width / 2
         half_height = height / 2
-        
+
         coordinates = [
             (center_x - half_width, center_y - half_height),
             (center_x + half_width, center_y - half_height),
             (center_x + half_width, center_y + half_height),
             (center_x - half_width, center_y + half_height)
         ]
-        
+
         return coordinates
     
     def generate_scenario_data(self, drone_count: int, delivery_count: int, 
@@ -121,7 +121,7 @@ class DataGenerator:
             for _ in range(cluster_size):
                 angle = random.uniform(0, 2 * math.pi)
                 radius = random.uniform(5, 20)
-                
+
                 x = center[0] + radius * math.cos(angle)
                 y = center[1] + radius * math.sin(angle)
                 
@@ -175,7 +175,7 @@ class DataGenerator:
         duration = random.randint(15, 40)
         end_time = start_time + duration
         return (start_time, end_time)
-    
+
     def generate_dynamic_zones(self, count: int, max_time: int = 120) -> List[Dict]:
         zones = []
         
@@ -190,10 +190,10 @@ class DataGenerator:
                     
                 duration = random.randint(10, 30)
                 end_time = min(start_time + duration, max_time)
-                
+
                 activations.append((start_time, end_time))
                 current_time = end_time + random.randint(5, 15)
-            
+
             for j, (start, end) in enumerate(activations):
                 zone = {
                     "id": i * 100 + j,
@@ -246,13 +246,13 @@ class DataGenerator:
 
 if __name__ == "__main__":
     generator = DataGenerator(seed=42)
-    
+
     scenarios = generator.generate_test_scenarios()
-    
+
     print("Üretilen test senaryoları:")
     for name, (drones, deliveries, zones) in scenarios.items():
         print(f"{name}: {len(drones)} drone, {len(deliveries)} teslimat, {len(zones)} no-fly zone")
-    
+
     drones, deliveries, zones = scenarios["medium"]
     generator.save_scenario_to_file("test_scenario.txt", drones, deliveries, zones)
-    print("Örnek senaryo 'test_scenario.txt' dosyasına kaydedildi.") 
+    print("Örnek senaryo 'test_scenario.txt' dosyasına kaydedildi.")
